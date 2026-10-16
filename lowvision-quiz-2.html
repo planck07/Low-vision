@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Low vision quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f8f9;--card:#fff;--ink:#10343d;--mute:#56747b;--line:#cfe0e3;--teal:#1b7f8c;--tealbg:#d9eef0;--bad:#a8402f;--good:#2b7a4b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f2429;--card:#16333a;--ink:#e4f1f3;--mute:#9bb8be;--line:#2a4a52;--teal:#5cc3cf;--tealbg:#1f4a52;--bad:#f0a090;--good:#8bd3a6}}
+:root[data-theme="dark"]{--bg:#0f2429;--card:#16333a;--ink:#e4f1f3;--mute:#9bb8be;--line:#2a4a52;--teal:#5cc3cf;--tealbg:#1f4a52;--bad:#f0a090;--good:#8bd3a6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 "Source Sans 3",system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:28px 18px 48px}
+h1{font:500 30px/1.15 Fraunces,Georgia,serif;margin:0 0 10px}
+p{margin:0 0 14px}
+.mute{color:var(--mute);font-size:15px}
+button{font:600 17px "Source Sans 3",system-ui,sans-serif;min-height:48px;padding:0 20px;border-radius:8px;border:1.5px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer;width:100%}
+button.opt{background:var(--card);color:var(--ink);border:1.5px solid var(--line);text-align:left;margin:0 0 10px;padding:12px 16px;font-weight:400;height:auto;user-select:none}
+button.opt.sel{border-color:var(--teal);background:var(--tealbg)}
+button.alt{background:var(--card);color:var(--teal)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+input{width:100%;min-height:48px;padding:0 14px;font:400 17px "Source Sans 3",system-ui,sans-serif;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin:0 0 14px}
+.err{color:var(--bad);font-size:15px;min-height:22px;margin:4px 0 10px}
+.top{display:flex;justify-content:space-between;font-size:15px;color:var(--mute)}
+.bar{height:5px;background:var(--line);border-radius:3px;margin:8px 0 22px}
+.bar i{display:block;height:5px;background:var(--teal);border-radius:3px}
+.q{font:500 22px/1.3 Fraunces,Georgia,serif;margin:0 0 18px;user-select:none}
+.row{display:flex;gap:10px;margin:0 0 12px}.row button{flex:1}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 16px}
+button.qn{padding:0;min-height:46px;background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+button.qn.done{background:var(--teal);color:#fff;border-color:var(--teal)}
+button.qn.cur{box-shadow:0 0 0 3px var(--ink)}
+.rv{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 12px}
+.rv .rq{font-weight:600;margin:0 0 8px}
+.rv p{margin:0 0 6px;font-size:16px}
+.no{color:var(--bad)}.yes{color:var(--good)}
+.code{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:16px;word-break:break-word;margin:0 0 14px}
+a.btn{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:8px;background:var(--teal);color:#fff;text-decoration:none;font-weight:600;margin-top:4px}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var WKEY="f9393b69-9fd1-45c3-bbf0-1e9ffa293d7b",CH=2743289869,LIMIT=2400,SK="lowvision40";
+var Q=[["A patient has 6/12 in the right eye and 6/24 in the left, with full fields. Under the acuity-based definition of low vision, is she low vision?",["Yes, because her left eye is worse than 6/18","No, because her better eye sees better than 6/18","Yes, because her two eyes differ","It can't be judged without field testing"],1,"The acuity definition looks at the better-seeing eye after correction. Her better eye (6/12) is better than 6/18, so she doesn't qualify by acuity alone."],
+["A patient has 6/24 in the right eye and 6/36 in the left, with full fields. Under the acuity-based definition, he is:",["Not low vision, since both eyes still see something","Low vision, since his better eye is worse than 6/18","Low vision only if his fields are reduced","Blind"],1,"His better eye (6/24) is worse than 6/18, so he falls in the low vision range."],
+["A patient has perception of light in the right eye and 6/18 in the left, with full fields. By the acuity definition alone, she:",["Is blind","Is low vision because one eye is so poor","Doesn't qualify, since her better eye isn't worse than 6/18","Must be referred to hospital before classification"],2,"Only the better eye counts, and 6/18 is not worse than 6/18. She might still count under the functional definition if her daily life is restricted."],
+["Which statement best captures the functional definition of low vision?",["Anyone with vision below normal","Reduced visual function that can't be fully corrected by glasses, contact lenses or medical treatment and that restricts everyday life","Anyone who has had cataract surgery","Anyone who can't read newspaper print"],1,"The functional definition focuses on non-remediable impairment plus the restriction it causes in everyday life, not only on an acuity number."],
+["Two people both have the same measured acuity. One still works and reads with a magnifier. The other has stopped working and avoids going out. What does this show?",["Acuity category alone doesn't predict activity limitation or participation restriction","One of them must have a different disease","One of them isn't truly impaired","Acuity always predicts function"],0,"The degree of visual impairment doesn't predict how far vision limits activity or restricts participation, so function has to be assessed too."],
+["Who is the clearest candidate for a low vision assessment?",["Someone fully corrected to normal vision","Someone whose vision can't be improved by glasses or treatment and who struggles with daily tasks","Someone whose new refractive error was just corrected","Someone with mild dry eye"],1,"Low vision care is for people with a non-correctable impairment who are restricted in daily life."],
+["Why isn't visual acuity category alone enough to decide who gets a low vision assessment?",["Acuity can't be measured reliably","Not all people with low vision have activity limitation or participation restriction","Categories are only used for children","Only visual fields matter"],1,"Some people with measurable loss manage well, and others with milder loss struggle, so need is judged on function."],
+["A patient's better eye has a visual field no wider than a small area around fixation. How is this handled in classification?",["It is placed in the blindness category regardless of acuity","It is ignored if acuity is good","It counts as mild impairment","It is excluded"],0,"When the extent of the field is taken into account, a very small field in the better eye places the person in category 3."],
+["Why was the term 'low vision' replaced by categories 1 and 2 in the ICD classification?",["Because low vision no longer exists","To avoid confusion with those needing low vision care","To exclude blindness","To reduce costs"],1,"The classification categories describe severity of impairment, while 'low vision' is also used for people who need low vision care, so the terms were separated."],
+["A woman with macular degeneration can no longer read her medicine labels. Using the disorder, impairment, activity limitation and participation restriction chain, this is best described as:",["Impairment","Activity limitation","Participation restriction","Disorder"],1,"Being unable to perform a task such as reading is a functional restriction, which is activity limitation (disability)."],
+["A man with low vision stops going to church and community meetings because he can't recognise people or find a seat. This is:",["Impairment","Disorder","Participation restriction","Activity limitation"],2,"He is disadvantaged in taking part in a normal life situation because of his surroundings and his impairment."],
+["In the disorder, impairment, activity limitation and participation restriction chain, age-related macular degeneration itself is the:",["Disorder","Impairment","Activity limitation","Participation restriction"],0,"The disease is the disorder. The loss of central vision it causes is the impairment."],
+["A community collects donations for a blind man and sees him mainly as someone to be pitied. Which model of disability is this?",["Charity model","Social model","Medical model","None of these"],0,"The charity model sees the person as a recipient of help."],
+["A clinic treats the eye disease but treats disability as the person's own medical problem, ignoring barriers in the environment. Which model is this?",["Social model","Charity model","Medical model","None of these"],2,"The medical model locates disability in the individual's condition and its treatment."],
+["A school provides no large print or accessible layout, so a pupil with low vision can't take part. Which model best explains the barrier?",["Medical model","Social model, which defines disability as a construct of society","Charity model","None of them"],1,"The social model blames society's barriers, not the individual's eyes."],
+["Under Article 29 of the Constitution, what right does a disabled person have regarding family life?", ["To be placed in a specialised institution by default", "To live with their family or foster parents and take part in social, creative and recreational activities", "To be excluded from recreation", "To live apart from their family"], 1, "Article 29(1) gives disabled persons the right to live with their families or foster parents and to participate in social, creative or recreational activities."],
+["Which trend is expected to increase the demand for low vision services?",["Fewer older people","Growing and ageing populations with more diabetes and macular degeneration","Better cures for chronic eye disease","Falling poverty"],1,"Population growth, ageing and rising chronic disease all increase the number of people with low vision."],
+["How does low vision relate to poverty?",["It protects people from poverty","It tends to perpetuate a cycle of poverty","It only affects wealthy people","It has no social effect"],1,"Low vision limits education and work, and poverty limits access to care, which keeps the cycle going."],
+["Which law passed in 2006 supports persons with disability in Ghana?",["The Disability Act (Act 715)","Article 12(2) of the 1992 Constitution","The National Disability Policy","A 1960 Education Act"],0,"The Persons With Disability Act, 2006 (Act 715). The Constitution and the 2000 policy came before it."],
+["What does the Disability Act require of commercial bus operators regarding seating?",["Reserve at least two seats for persons with disability","Reserve a whole row on every trip","Nothing","Only provide ramps"],0,"A bus may fill the reserved seats only if the bus would otherwise be full without them."],
+["A motorist sees a person with a disability signalling to cross at a designated crossing. What must the motorist do?",["Sound the horn","Slow slightly","Stop","Carry on if the road is clear"],2,"The Act requires motorists to stop, and breaking this is an offence."],
+["A shopping centre car park has no marked parking for persons with disability. Which provision is not being followed?",["Public parking places must have a demarcated area for persons with disability","Periodic screening of children","Reserved bus seats","Court procedure adjustments"],0,"Section 26 requires a clearly demarcated parking area for persons with disability."],
+["The Ministry of Health wants to detect disability early in children. Which provision supports this?",["Periodic screening of children to detect, prevent and manage disability","Reserved parking","Reserved bus seats","Rules about court procedure"],0,"Section 34 provides for periodic screening in collaboration with Education and Social Welfare."],
+["A neighbour regularly calls a person with low vision a derogatory name. Under the Act, this is:",["An offence","Harmless humour","A civil matter only","Allowed in private"],0,"Section 37 makes it an offence, punishable by a fine or imprisonment."],
+["The Disability Act requires the Ministry to progressively set up:",["Rehabilitation centres in regions and districts offering guidance, counselling and training","Only private clinics","Banks for persons with disability","Police posts"],0,"Section 14 covers rehabilitation centres."],
+["A practitioner prescribes a magnifier and trains a patient to use it so she can read her own letters. Which objectives of low vision care does this serve?",["Curing her disease","Maximising residual vision and increasing independence","Reducing disease prevalence","Replacing the need for follow-up"],1,"The two stated objectives are to maximise residual vision and to increase independence."],
+["A patient asks if low vision care will give her back normal vision. Which answer is most accurate?",["Yes, completely","Only with surgery","No, it aims to make the best use of the vision she has and help her be independent","Only in children"],2,"Low vision care works with residual vision and doesn't restore normal sight."],
+["A country has no local survey of visual impairment. How can it still estimate need?",["Use population-based studies or estimates from countries with similar demographics","Count clinic attendances only","Ignore it until a survey is done","Ask hospitals to guess"],0,"Where surveys are missing, estimates from similar countries can guide planning."],
+["Why do planners need to know the causes of low vision?",["To assign blame","For prevention and control, and to target services","To avoid screening","To reduce spectacle costs"],1,"Knowing causes allows prevention and control and helps target services to those who will benefit."],
+["A rural teacher notices a pupil squinting at the board and sends her for an eye check. At which level of low vision care is this?",["Primary","Secondary","Tertiary","None of these"],0,"Teachers are among those delivering primary level care, which includes identification and referral."],
+["Which of these is a primary level low vision care activity?",["Advocacy, screening, education, referral and simple devices","Research and mentoring other services","Setting up low vision units","Prescribing only highly specialised aids"],0,"Primary care also includes environmental modification, and is delivered by community-based rehabilitation workers, primary health practitioners and teachers."],
+["An optometrist in a general eye clinic does a comprehensive assessment and prescribes low vision aids. Which level is this?",["Primary","Secondary","Tertiary","Community"],1,"Secondary care is implemented by optometrists and includes assessment, monitoring and prescribing aids."],
+["A unit led by a qualified low vision practitioner offers research, advocacy and basic rehabilitation as well as assessment. Which level is this?",["Primary","Secondary","Tertiary","None of these"],2,"Tertiary care is dedicated to low vision, with a qualified practitioner, research, advocacy and basic rehabilitation."],
+["According to the Disability Act, how should low vision services be organised?",["Integrated into the general health care system","Delivered only by charities","Kept separate from hospitals","Private only"],0,"Access is improved when low vision care is part of general health care."],
+["A sceptical colleague asks whether low vision services work. Which conclusion best matches the systematic review?",["They improve every outcome, with strong evidence","Aids from rehabilitation services improve reading and are valued, but overall high-quality evidence is lacking","There is no evidence of any benefit","They treat depression effectively"],1,"The review found good evidence for reading improvement with aids, but few high-quality trials overall."],
+["Which outcome showed the largest improvement in the Veterans Affairs rehabilitation trial?",["Mobility","Visual motor skills","Reading","Information processing"],2,"The largest effect was in the reading domain."],
+["What did the Ghana study find about optical low vision devices?",["They had no effect","They improved quality of life scores and measured acuity","They reduced quality of life","They only improved fields"],1,"Significant improvements in acuity and in most quality of life domains, so optical devices help patients in Ghana."],
+["In the Veterans Affairs trial, what happened to the waiting-list control group?",["It improved a lot","It showed a small decline in function","It was not studied","It became blind"],1,"Without the intervention, function declined slightly over the period."],
+["Which evidence about low vision services is described as contradictory?",["Reading improvement","Self-reported functional ability in VA programmes","Effect on vision-related quality of life","Whether users value aids"],2,"Evidence about vision-related quality of life is mixed, unlike reading and self-reported function."],
+["Which type of low vision service has evidence of improving generic health-related quality of life?",["Services with a group-based component","Services with extra home visits","Services using only spectacles","None"],0,"There is little evidence of generic quality of life benefit except where there's a group-based component."]];
+var app=document.getElementById("app"),order,i,end,tmr,active=false,t0,picks=[],sw=0,nm="";
+function hs(t){var x=5381;for(var k=0;k<t.length;k++){x=((x<<5)+x+t.charCodeAt(k))>>>0;}return x;}
+function shuffle(a){for(var x=a.length-1;x>0;x--){var j=Math.floor(Math.random()*(x+1)),t=a[x];a[x]=a[j];a[j]=t;}return a;}
+function sget(){try{return JSON.parse(localStorage.getItem(SK));}catch(e){return null;}}
+function sset(v){try{localStorage.setItem(SK,JSON.stringify(v));}catch(e){}}
+function p2(n){return String(n).padStart(2,"0");}
+function mmss(ms){var s=Math.max(0,Math.floor(ms/1000));return p2(Math.floor(s/60))+":"+p2(s%60);}
+function gate(){
+ var s=sget();
+ if(s&&s.done){showResult(s,false);return;}
+ if(s&&s.started){app.innerHTML='<h1>Quiz already started</h1><p>This quiz was started on this device and can\'t be restarted. Contact your instructor.</p><p class="mute">Started by '+s.name+'.</p>';return;}
+ app.innerHTML='<h1>Low vision quiz</h1><p class="mute">Introduction to low vision: definitions, disability models, Ghana disability law, levels of care and evidence</p><p>'+Q.length+' multiple-choice questions, '+(LIMIT/60)+' minutes. One attempt. You can go back and change answers before you submit, and afterwards you will see all your answers, right and wrong, with explanations for the ones you missed.</p><label for="nm" class="mute">Your full name</label><input id="nm" autocomplete="name" placeholder="Ama Mensah"><label for="pw" class="mute">Access code from your instructor</label><input id="pw" type="password" autocomplete="off"><div class="err" id="err" role="alert"></div><button id="go">Start quiz</button>';
+ var err=document.getElementById("err");
+ document.getElementById("go").onclick=function(){
+  var name=document.getElementById("nm").value.trim();
+  if(!name){err.textContent="Enter your name first.";return;}
+  if(hs(document.getElementById("pw").value.trim().toLowerCase())!==CH){err.textContent="That access code isn't right. Check it and try again.";return;}
+  begin(name);
+ };
+}
+function begin(name){
+ var idx=[];for(var k=0;k<Q.length;k++){idx.push(k);}
+ order=shuffle(idx).map(function(n){var o=Q[n][1].map(function(t,j){return {t:t,o:j};});return {n:n,q:Q[n][0],opts:shuffle(o)};});
+ picks=[];for(var z=0;z<Q.length;z++){picks.push(-1);}
+ i=0;sw=0;active=true;nm=name;t0=Date.now();end=t0+LIMIT*1000;
+ sset({started:t0,name:name});
+ tmr=setInterval(function(){var el=document.getElementById("tm"),l=end-Date.now();if(el){el.textContent=mmss(l);}if(l<=0){finish();}},1000);
+ ask();
+}
+function head(){
+ var d=0;for(var k=0;k<picks.length;k++){if(picks[k]>=0){d++;}}
+ return {done:d,html:'<div class="top"><span>'+d+' of '+Q.length+' answered</span><span>Time left <b id="tm">'+mmss(end-Date.now())+'</b></span></div><div class="bar"><i style="width:'+Math.round(d/Q.length*100)+'%"></i></div>'};
+}
+function ask(){
+ var d=order[i],h=head().html;
+ h+='<p class="mute">Question '+(i+1)+' of '+Q.length+'</p><p class="q">'+d.q+'</p>';
+ for(var k=0;k<d.opts.length;k++){h+='<button class="opt'+(picks[i]===k?' sel':'')+'" data-k="'+k+'">'+d.opts[k].t+'</button>';}
+ h+='<div class="row">'+(i>0?'<button id="bk" class="alt">Back</button>':'')+'<button id="nx">'+(i<Q.length-1?'Next':'Review')+'</button></div><button id="all" class="alt">All questions</button><p class="mute" style="margin-top:14px">Leaving this tab is recorded.</p>';
+ app.innerHTML=h;
+ var o=app.querySelectorAll(".opt");
+ for(var n=0;n<o.length;n++){o[n].onclick=function(){picks[i]=+this.getAttribute("data-k");ask();};}
+ var bk=document.getElementById("bk");if(bk){bk.onclick=function(){i--;ask();};}
+ document.getElementById("nx").onclick=function(){if(i<Q.length-1){i++;ask();}else{overview();}};
+ document.getElementById("all").onclick=overview;
+}
+function overview(){
+ var hd=head(),left=Q.length-hd.done,conf=false;
+ var h=hd.html+'<h1 style="font-size:24px">All questions</h1><p class="mute">Filled numbers are answered. Outlined numbers are not answered yet. Tap a number to open that question.</p><div class="grid">';
+ for(var k=0;k<Q.length;k++){h+='<button class="qn'+(picks[k]>=0?' done':'')+(k===i?' cur':'')+'" data-q="'+k+'" aria-label="Question '+(k+1)+(picks[k]>=0?', answered':', not answered')+'">'+(k+1)+'</button>';}
+ h+='</div><div class="err" id="err" role="alert"></div><div class="row"><button id="rt" class="alt">Back to question</button><button id="sub">Submit quiz</button></div>';
+ app.innerHTML=h;
+ var g=app.querySelectorAll(".qn");
+ for(var n=0;n<g.length;n++){g[n].onclick=function(){i=+this.getAttribute("data-q");ask();};}
+ document.getElementById("rt").onclick=ask;
+ document.getElementById("sub").onclick=function(){
+  if(left>0&&!conf){conf=true;document.getElementById("err").textContent=left+" question"+(left>1?"s are":" is")+" not answered. Tap Submit quiz again to submit anyway.";return;}
+  finish();
+ };
+}
+function finish(){
+ if(!active){return;}
+ active=false;clearInterval(tmr);
+ var score=0,rev=[],answered=0;
+ for(var k=0;k<order.length;k++){
+  var e=order[k],c=picks[k]>=0?e.opts[picks[k]]:null,d=Q[e.n],ok=!!c&&c.o===d[2];
+  if(c){answered++;}
+  if(ok){score++;}
+  rev.push([e.n+1,d[0],c?c.t:"Not answered",d[1][d[2]],ok?"":d[3],ok?1:0]);
+ }
+ rev.sort(function(a,b){return a[0]-b[0];});
+ var used=mmss(Math.min(Date.now(),end)-t0);
+ var code=nm+" | "+score+"/"+Q.length+" | tab leaves: "+sw+" | time used: "+used;
+ var s={started:t0,name:nm,done:1,score:score,total:Q.length,code:code,review:rev};
+ sset(s);
+ showResult(s,true);
+ var fail="Couldn't send automatically. Send the result code below to your instructor.";
+ if(WKEY.indexOf("PASTE")===0){setStatus(fail);return;}
+ setStatus("Sending your result…");
+ var missed=rev.filter(function(r){return !r[5];}).map(function(r){return r[0];}).join(", ");
+ try{fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:WKEY,subject:"Low vision quiz result: "+nm,name:nm,score:score+" / "+Q.length,answered:answered,missed_question_numbers:missed||"none",tab_leaves:sw,time_used:used})}).then(function(r){return r.json();}).then(function(d){setStatus(d&&d.success?"Your result was sent to your instructor.":fail);}).catch(function(){setStatus(fail);});}catch(e){setStatus(fail);}
+}
+var statusMsg="";
+function setStatus(t){statusMsg=t;var el=document.getElementById("st");if(el){el.textContent=t;}}
+function showResult(s,fresh){
+ var r=s.review||[],wrong=0;
+ for(var k=0;k<r.length;k++){if(!r[k][5]){wrong++;}}
+ var only=false;
+ function draw(){
+  var h='<h1>You scored '+s.score+' / '+s.total+'</h1><p class="mute" id="st">'+(fresh?statusMsg:"Your result was already submitted on this device.")+'</p>';
+  h+='<h2 style="font:500 22px Fraunces,Georgia,serif;margin:18px 0 6px">Your answers</h2><p class="mute">'+s.score+' correct, '+wrong+' wrong or unanswered. Correct answers are marked. Each wrong one shows the right answer and why.</p><div class="row"><button id="fa" class="'+(only?'alt':'')+'">All questions</button><button id="fw" class="'+(only?'':'alt')+'">Wrong only</button></div>';
+  for(var k=0;k<r.length;k++){
+   if(only&&r[k][5]){continue;}
+   if(r[k][5]){h+='<div class="rv"><p class="rq">'+r[k][1]+'</p><p class="yes"><b>Correct:</b> '+r[k][3]+'</p></div>';}
+   else{h+='<div class="rv"><p class="rq">'+r[k][1]+'</p><p class="no">Your answer: '+r[k][2]+'</p><p class="yes">Correct answer: '+r[k][3]+'</p><p><b>Why:</b> '+r[k][4]+'</p></div>';}
+  }
+  h+='<p>Your result code:</p><div class="code">'+s.code+'</div><button id="cp" class="alt">Copy result code</button><div class="err" id="cerr"></div><a class="btn" href="quit.html">Exit exam</a>';
+  app.innerHTML=h;
+  document.getElementById("fa").onclick=function(){only=false;draw();};
+  document.getElementById("fw").onclick=function(){only=true;draw();};
+  document.getElementById("cp").onclick=function(){var m=document.getElementById("cerr");try{navigator.clipboard.writeText(s.code).then(function(){m.textContent="Copied.";},function(){m.textContent="Select the code above and copy it.";});}catch(e){m.textContent="Select the code above and copy it.";}};
+ }
+ draw();window.scrollTo(0,0);
+}
+document.addEventListener("visibilitychange",function(){if(active&&document.hidden){sw++;}});
+document.addEventListener("contextmenu",function(e){if(active){e.preventDefault();}});
+document.addEventListener("copy",function(e){if(active){e.preventDefault();}});
+gate();
+</script>
+</body>
+</html>
